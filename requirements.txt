@@ -9,7 +9,6 @@ altair==5.5.0
 annotated-types==0.7.0
 antlr4-python3-runtime==4.9.3
 anyio==4.4.0
-appscript==1.2.5
 argostranslate==1.9.6
 attrs==23.2.0
 beautifulsoup4==4.12.3
