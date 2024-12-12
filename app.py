@@ -1,5 +1,6 @@
 import streamlit as st
 import yt_dlp
+import os
 
 st.title('YouTube视频下载器')
 
@@ -14,6 +15,8 @@ if url:
             'no_warnings': True,
             'extract_info': True,
             'nocheckcertificate': True,
+            # 添加cookies配置
+            'cookiesfrombrowser': ('chrome',),  # 或者使用 'firefox', 'safari', 'edge' 等
         }
         
         # 获取视频信息
@@ -27,9 +30,18 @@ if url:
                 st.write(f'视频标题: {info.get("title", "未知")}')
                 st.write(f'视频时长: {info.get("duration", "未知")} 秒')
                 
-                # 获取直接下载链接
-                if 'url' in info:
-                    download_url = info['url']
+                # 获取可用的格式
+                formats = info.get('formats', [])
+                # 过滤出视频格式
+                video_formats = [f for f in formats if f.get('vcodec', 'none') != 'none']
+                
+                if video_formats:
+                    # 选择最佳质量的视频
+                    best_video = max(video_formats, key=lambda x: x.get('height', 0) or 0)
+                    download_url = best_video['url']
+                    
+                    quality = best_video.get('height', 'unknown')
+                    st.write(f'视频质量: {quality}p')
                     st.markdown(f'### [点击这里下载视频]({download_url})')
                     st.write('注意：链接有效期有限，请尽快下载')
                 else:
