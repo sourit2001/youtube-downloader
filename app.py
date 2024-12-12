@@ -1,31 +1,35 @@
 import streamlit as st
 import yt_dlp
 
-def get_download_link(url):
+st.title('YouTube视频下载器')
+
+url = st.text_input('请输入YouTube视频链接:')
+
+if url:
     try:
+        # 配置yt-dlp选项
         ydl_opts = {
             'format': 'best',  # 获取最佳质量
-            'extract_info': True,  # 只提取信息
+            'extract_info': True,
             'quiet': True,
             'no_warnings': True
         }
         
+        # 获取视频信息
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
-            download_url = info['url']
-            return download_url
+            
+        # 显示视频信息
+        st.image(info['thumbnail'])
+        st.write(f'视频标题: {info["title"]}')
+        st.write(f'视频时长: {info["duration"]} 秒')
+        
+        # 获取直接下载链接
+        download_url = info['url']
+        
+        # 提供下载链接
+        st.markdown(f'### [点击这里下载视频]({download_url})')
+        st.write('注意：链接有效期有限，请尽快下载')
             
     except Exception as e:
-        st.error(f'获取下载链接失败: {str(e)}')
-        return None
-
-# 设置页面标题
-st.title('YouTube视频下载器')
-
-# 创建输入框
-url = st.text_input('请输入YouTube视频链接:')
-
-if url:
-    download_url = get_download_link(url)
-    if download_url:
-        st.markdown(f'[点击这里下载视频]({download_url})')
+        st.error(f'发生错误: {str(e)}')
